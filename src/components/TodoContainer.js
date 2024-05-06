@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
-import AddButton from "./AddButton";
+import AddTodoForm from "./AddTodoForm";
+import { Todo } from "./Todo";
 import { v4 as uuidv4 } from "uuid";
+import EditTodoForm from "./EditTodoForm";
 uuidv4();
 
 export const TodoContainer = () => {
@@ -20,9 +22,51 @@ export const TodoContainer = () => {
     localStorage.setItem("todos", JSON.stringify(newTodos));
   };
 
+  const toggleComplete = (id) => {
+    const newTodos = todos.map((todo) =>
+      todo.id === id ? { ...todo, completed: !todo.completed } : todo
+    );
+    setTodos(newTodos);
+    localStorage.setItem("todos", JSON.stringify(newTodos));
+  };
+
+  const deleteTodo = (id) => {
+    const newTodos = todos.filter((todo) => todo.id !== id);
+    setTodos(newTodos);
+    localStorage.setItem("todos", JSON.stringify(newTodos));
+  };
+
+  const editTodo = (id) => {
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, isEditing: !todo.isEditing } : todo
+      )
+    );
+  };
+
+  const editTask = (task, id) => {
+    const newTodos = todos.map((todo) =>
+      todo.id === id ? { ...todo, task, isEditing: !todo.isEditing } : todo
+    );
+    setTodos(newTodos);
+    localStorage.setItem("todos", JSON.stringify(newTodos));
+  };
   return (
-    <div className="TaskContainer">
-      <AddButton addTodo={addTodo} />
+    <div className="TodoWrapper">
+      <AddTodoForm addTodo={addTodo} />
+      {todos.map((todo, index) =>
+        todo.isEditing ? (
+          <EditTodoForm key={todo.id} editTodo={editTask} task={todo} />
+        ) : (
+          <Todo
+            task={todo}
+            key={index}
+            toggleComplete={toggleComplete}
+            deleteTodo={deleteTodo}
+            editTodo={() => editTodo(todo.id)}
+          />
+        )
+      )}
     </div>
   );
 };

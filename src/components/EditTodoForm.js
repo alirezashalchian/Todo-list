@@ -1,27 +1,25 @@
 import React, { useState } from "react";
 
-const AddButton = ({ addTodo }) => {
-  const [isOpen, setIsOpen] = useState(false);
+const EditTodoForm = ({ editTodo, task }) => {
+  const [isEditing, setIsEditing] = useState(task.isEditing || false);
   const [value, setValue] = useState("");
 
   const toggleInput = () => {
-    setIsOpen(!isOpen);
+    setIsEditing(!isEditing);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (value) {
-      addTodo(value);
-      setValue("");
-    }
-    console.log(value);
+
+    editTodo(value, task.id);
+    setValue("");
   };
 
   return (
     <div>
-      {!isOpen && <button onClick={toggleInput}>+ Add a Task</button>}
+      {!isEditing && <button onClick={toggleInput}>Edit</button>}
 
-      {isOpen && (
+      {isEditing && (
         <form onSubmit={handleSubmit} className="TodoForm">
           <input
             type="text"
@@ -31,7 +29,7 @@ const AddButton = ({ addTodo }) => {
             placeholder="What is the task today?"
           />
           <button type="submit" className="todo-btn">
-            Add Task
+            Update your task
           </button>
         </form>
       )}
@@ -39,4 +37,4 @@ const AddButton = ({ addTodo }) => {
   );
 };
 
-export default AddButton;
+export default EditTodoForm;
