@@ -3,10 +3,14 @@ import AddTodoForm from "./AddTodoForm";
 import { Todo } from "./Todo";
 import { v4 as uuidv4 } from "uuid";
 import EditTodoForm from "./EditTodoForm";
+import { createContext } from "react";
 uuidv4();
+
+export const TodoContainerContext = createContext();
 
 export const TodoContainer = () => {
   const [todos, setTodos] = useState([]);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     const savedTodos = JSON.parse(localStorage.getItem("todos")) || [];
@@ -16,7 +20,13 @@ export const TodoContainer = () => {
   const addTodo = (todo) => {
     const newTodos = [
       ...todos,
-      { id: uuidv4(), task: todo, completed: false, isEditing: false },
+      {
+        id: uuidv4(),
+        task: todo,
+        completed: false,
+        isEditing: false,
+        isExpanded: false,
+      },
     ];
     setTodos(newTodos);
     localStorage.setItem("todos", JSON.stringify(newTodos));
@@ -51,22 +61,27 @@ export const TodoContainer = () => {
     setTodos(newTodos);
     localStorage.setItem("todos", JSON.stringify(newTodos));
   };
+  const toggleExpand = () => setIsExpanded(!isExpanded);
+
   return (
-    <div className="TodoWrapper">
-      <AddTodoForm addTodo={addTodo} />
-      {todos.map((todo, index) =>
-        todo.isEditing ? (
-          <EditTodoForm key={todo.id} editTodo={editTask} task={todo} />
-        ) : (
-          <Todo
-            task={todo}
-            key={index}
-            toggleComplete={toggleComplete}
-            deleteTodo={deleteTodo}
-            editTodo={() => editTodo(todo.id)}
-          />
-        )
-      )}
-    </div>
+    <TodoContainerContext.Provider value={{ isExpanded, setIsExpanded }}>
+      <div className="TodoWrapper">
+        <AddTodoForm addTodo={addTodo} />
+        {todos.map((todo, index) =>
+          todo.isEditing ? (
+            <EditTodoForm key={todo.id} editTodo={editTask} task={todo} />
+          ) : (
+            <Todo
+              task={todo}
+              key={index}
+              toggleComplete={toggleComplete}
+              deleteTodo={deleteTodo}
+              editTodo={() => editTodo(todo.id)}
+              toggleExpand={toggleExpand}
+            />
+          )
+        )}
+      </div>
+    </TodoContainerContext.Provider>
   );
 };

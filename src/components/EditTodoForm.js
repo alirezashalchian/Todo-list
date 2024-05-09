@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 const EditTodoForm = ({ editTodo, task }) => {
   const [isEditing, setIsEditing] = useState(task.isEditing || false);
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(task.task || "");
 
   const toggleInput = () => {
     setIsEditing(!isEditing);

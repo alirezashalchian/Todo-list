@@ -13,6 +13,7 @@ const AddTodoForm = ({ addTodo }) => {
     if (value) {
       addTodo(value);
       setValue("");
+      setIsOpen(false);
     }
     console.log(value);
   };
